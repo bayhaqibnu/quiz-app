@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Quizz App!</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+  <div id="opening_window">
+    <div class="header">
+      <h2>Selamat Bermain Quiz</h2>
+      <button onclick="mulaiKuis()">START</button>
+    </div>
+  </div>
+
+  <div id="quiz_window" class="hidden">
+    <div class="wrap-content">
+      <h1 id="question"></h1>
+
+      <input type="radio" name="choices" data-id="0" id="choice0">
+      <label for="choice0" id="choicesText0"></label>
+
+      <input type="radio" name="choices" data-id="1" id="choice1">
+      <label for="choice1" id="choicesText1"></label>
+
+      <input type="radio" name="choices" data-id="2" id="choice2">
+      <label for="choice2" id="choicesText2"></label>
+
+      <input type="radio" name="choices" data-id="3" id="choice3">
+      <label for="choice3" id="choicesText3"></label>
+
+      <button onclick="nextQuestion()">Next</button>
+    </div>
+  </div>
+
+  <div id="closing_window" class="hidden">
+    <div class="line"></div>
+    
+    <div class="wrap-footer1">
+      <h1>Quiz Done!</h1>
+    </div>
+    
+    <div class="wrap-footer2">
+      <h2 id="skor_text"></h2>
+    </div>
+
+  </div>
+
+  <script>
+    // =============================================
+    // ============= DATA QUIZ =====================
+    // =============================================
+
+    const DB_QUIZ = [{
+        question: "1. Duluan Telur apa Ayam ?",
+        answers: ['ayam', 'telur', 'kambing', 'kerbau']
+      },
+      {
+        question: "2. Sop dibalik ?",
+        answers: ['pos', 'tumpah', 'sopan', 'apos']
+      },
+      {
+        question: "3. Programmer itu...",
+        answers: ['tangguh', 'lemah', 'alay', 'males']
+      },
+      {
+        question: "4. Tebak Nama Panjang Saya...",
+        answers: ['masbay', 'bayhaqi', 'bayu', 'banyu']
+      }
+    ]
+
+    const CORRECT_ANSWER = [0, 1, 0, 1];
+
+    // =============================================
+    // ============ SETUP QUESTION -================
+    // =============================================
+
+
+    function mulaiKuis() {
+      document.getElementById('opening_window').style.display = 'none';
+      document.getElementById('quiz_window').style.display = 'block';
+    }
+
+    let label = document.getElementsByTagName('label');
+    let current_q = 0;
+    let pageNum = 0;
+    let saved_answer = [];
+    let total_score = 0;
+
+    document.addEventListener('DOMContentLoaded', function () {
+      setupQuestion();
+    });
+
+
+    function setupQuestion() {
+      document.getElementById('question').innerText = DB_QUIZ[current_q][`question`];
+      for (let i = 0; i < label.length; i++) {
+        document.getElementById(`choicesText${i}`).innerText = DB_QUIZ[current_q]['answers'][i];
+      }
+
+    }
+
+    function nextQuestion() {
+      current_q++;
+
+      saveAnswer();
+
+      if (current_q > DB_QUIZ.length - 1) {
+        stopQuiz();
+      }
+
+      resetState();
+      setupQuestion();
+    }
+
+    function resetState() {
+      const choosedAnswer = document.querySelector('input[name="choices"]:checked');
+      if (choosedAnswer != null) {
+        choosedAnswer.checked = false;
+      }
+    }
+
+    function stopQuiz() {
+      checkScore();
+
+      document.getElementById('quiz_window').style.display = 'none';
+      document.getElementById('closing_window').style.display = 'block';
+      document.getElementById('skor_text').innerText = `Skor Anda : ${total_score}`;
+
+      return;
+    }
+
+    function saveAnswer() {
+      let answer = document.querySelector('input[name="choices"]:checked');
+
+      if (answer != null) {
+        saved_answer.push(parseInt(answer.getAttribute('data-id')));
+      } else {
+        saved_answer.push(5);
+      }
+    }
+
+    function checkScore() {
+      for (let i = 0; i < saved_answer.length; i++) {
+        if (saved_answer[i] == CORRECT_ANSWER[i]) {
+          total_score += 100;
+        } else {
+          total_score -= 50;
+        }
+      }
+    }
+  </script>
+</body>
+
+</html>
